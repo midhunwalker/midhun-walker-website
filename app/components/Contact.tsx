@@ -339,7 +339,7 @@ export function Contact() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.18 }}
-              transition={{ delay: 0.08, duration: 0.48, easing: "ease-out" }}
+              transition={{ delay: 0.08, duration: 0.48, ease: "easeOut" }}
             >
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-success animate-pulse" />
