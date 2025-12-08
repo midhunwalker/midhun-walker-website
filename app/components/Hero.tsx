@@ -1,26 +1,36 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { ArrowRight, Mail, Github, Linkedin, Rocket, Briefcase, Zap, Globe } from "lucide-react";
+import React, { useRef, useState } from "react";
+import {
+  ArrowRight,
+  Mail,
+  Github,
+  Linkedin,
+  Rocket,
+  Briefcase,
+  Zap,
+  Globe,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface HeroProps {
-  portraitUrl: string;
+  portraitUrl?: string;
 }
 
-export function Hero({ portraitUrl }: HeroProps) {
-  const heroRef = useRef<HTMLDivElement>(null);
+export function Hero({ portraitUrl = "/midhunPhoto.png" }: HeroProps) {
+  const heroRef = useRef<HTMLDivElement | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // motion values for parallax/tilt
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
   const springConfig = { damping: 25, stiffness: 150 };
   const x = useSpring(mouseX, springConfig);
   const y = useSpring(mouseY, springConfig);
 
+  // tilt values (these are MotionValues and can be passed directly in style)
   const rotateX = useTransform(y, [-300, 300], [5, -5]);
   const rotateY = useTransform(x, [-300, 300], [-5, 5]);
 
@@ -29,33 +39,36 @@ export function Hero({ portraitUrl }: HeroProps) {
     const rect = heroRef.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    mouseX.set(e.clientX - centerX);
-    mouseY.set(e.clientY - centerY);
-    setMousePosition({ x: e.clientX - centerX, y: e.clientY - centerY });
+
+    const relX = e.clientX - centerX;
+    const relY = e.clientY - centerY;
+
+    mouseX.set(relX);
+    mouseY.set(relY);
+    setMousePosition({ x: relX, y: relY });
   };
 
   const scrollToSection = (id: string) => {
-    const element = document.querySelector(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    // accept either "#id" or "id"
+    const selector = id.startsWith("#") ? id : `#${id}`;
+    const el = document.querySelector(selector);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center px-6 lg:px-12 py-24 overflow-hidden"
-      style={{
-        background: "#0B1220",
-      }}
       ref={heroRef}
       onMouseMove={handleMouseMove}
+      className="relative min-h-screen flex items-center justify-center px-6 lg:px-12 py-24 overflow-hidden"
+      style={{ background: "#0B1220" }}
     >
       {/* Noise Texture Overlay */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundImage:
+            'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
         }}
       />
 
@@ -66,50 +79,28 @@ export function Hero({ portraitUrl }: HeroProps) {
           background: "radial-gradient(circle at 50% 50%, #4A58FF, transparent 60%)",
           filter: "blur(80px)",
         }}
-        animate={{
-          x: [0, 50, 0],
-          y: [0, -40, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ x: [0, 50, 0], y: [0, -40, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
+
       <motion.div
         className="absolute top-1/3 right-0 w-[500px] h-[500px] opacity-15"
         style={{
           background: "radial-gradient(circle at 50% 50%, #7C3BFF, transparent 60%)",
           filter: "blur(80px)",
         }}
-        animate={{
-          x: [0, -40, 0],
-          y: [0, 50, 0],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ x: [0, -40, 0], y: [0, 50, 0], scale: [1, 1.15, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
       />
+
       <motion.div
         className="absolute bottom-1/4 left-1/3 w-[400px] h-[400px] opacity-10"
         style={{
           background: "radial-gradient(circle at 50% 50%, #6273FF, transparent 60%)",
           filter: "blur(70px)",
         }}
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -30, 0],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        animate={{ x: [0, 30, 0], y: [0, -30, 0], scale: [1, 1.2, 1] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center relative z-10">
@@ -183,7 +174,8 @@ export function Hero({ portraitUrl }: HeroProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            I build scalable web apps and beautiful product interfaces. Specializing in React, Node.js, and UX-focused design that puts users first.
+            I build scalable web apps and beautiful product interfaces. Specializing in
+            React, Node.js, and UX-focused design that puts users first.
           </motion.p>
 
           {/* Buttons */}
@@ -212,6 +204,7 @@ export function Hero({ portraitUrl }: HeroProps) {
               See Projects
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
+
             <Button
               size="lg"
               className="group gap-2 border-0 w-full sm:w-auto"
@@ -231,6 +224,7 @@ export function Hero({ portraitUrl }: HeroProps) {
               <Briefcase className="w-4 h-4" />
               Hire Me for Freelance
             </Button>
+
             <Button
               size="lg"
               variant="outline"
@@ -285,6 +279,7 @@ export function Hero({ portraitUrl }: HeroProps) {
             >
               <Mail className="w-5 h-5" />
             </a>
+
             <a
               href="https://github.com"
               target="_blank"
@@ -295,6 +290,7 @@ export function Hero({ portraitUrl }: HeroProps) {
             >
               <Github className="w-5 h-5" />
             </a>
+
             <a
               href="https://linkedin.com"
               target="_blank"
@@ -315,13 +311,15 @@ export function Hero({ portraitUrl }: HeroProps) {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
-          {/* Portrait with parallax effect */}
+          {/* Portrait with parallax/tilt effect */}
           <motion.div
             className="relative z-10"
             style={{
               rotateX,
               rotateY,
               transformStyle: "preserve-3d",
+              // ensure perspective for 3D tilt
+              perspective: 1200,
             }}
           >
             <div className="relative">
@@ -329,7 +327,8 @@ export function Hero({ portraitUrl }: HeroProps) {
               <div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: "radial-gradient(circle at 50% 50%, rgba(98, 115, 255, 0.4), transparent 70%)",
+                  background:
+                    "radial-gradient(circle at 50% 50%, rgba(98, 115, 255, 0.4), transparent 70%)",
                   filter: "blur(60px)",
                   transform: "scale(1.3)",
                 }}
@@ -351,7 +350,7 @@ export function Hero({ portraitUrl }: HeroProps) {
                 >
                   <div className="w-full h-full rounded-full overflow-hidden">
                     <ImageWithFallback
-                      src="/midhunPhoto.png"
+                      src={portraitUrl}
                       alt="Professional portrait"
                       className="w-full h-full object-cover"
                     />
@@ -361,37 +360,30 @@ export function Hero({ portraitUrl }: HeroProps) {
             </div>
           </motion.div>
 
-          {/* Floating Status Badge */}
+          {/* Floating Status Badge - merged style objects into single prop */}
           <motion.div
             className="absolute -top-6 -right-6 backdrop-blur-md rounded-2xl p-4 hidden lg:block"
+            animate={{ y: [0, -12, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+            // merged final style here (only one style prop)
             style={{
               background: "rgba(255, 255, 255, 0.06)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-            }}
-            animate={{
-              y: [0, -12, 0],
-            }}
-            transition={{
-              duration: 3.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            style={{
               transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`,
             }}
           >
             <div className="flex items-center gap-3">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{
-                  background: "rgba(16, 185, 129, 0.15)",
-                }}
+                style={{ background: "rgba(16, 185, 129, 0.15)" }}
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-[#4ADE80]" style={{
-                  boxShadow: "0 0 4px rgba(74, 222, 128, 0.36)",
-                }} />
+                <div
+                  className="w-1.5 h-1.5 rounded-full bg-[#4ADE80]"
+                  style={{ boxShadow: "0 0 4px rgba(74, 222, 128, 0.36)" }}
+                />
               </div>
+
               <div>
                 <p className="text-xs" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
                   Status
@@ -403,81 +395,30 @@ export function Hero({ portraitUrl }: HeroProps) {
             </div>
           </motion.div>
 
-          {/* Clients Worldwide Badge - Repositioned Under Portrait */}
-          {/* /*<motion.div
-            className="absolute -bottom-2 right-5 z-50 hidden sm:block"
-            animate={{
-              y: [0, -6, 0],
-            }}
-            transition={{
-              duration: 3.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.2,
-            }}
-            style={{
-              transform: `translate(${mousePosition.x * 0.01}px, ${mousePosition.y * 0.01}px)`,
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <Globe 
-                className="w-3 h-3" 
-                style={{ color: "#7EE7C6" }} 
-              />
-              <p 
-                className="font-semibold whitespace-nowrap" 
-                style={{ 
-                  color: "#E6EEF8",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                }}
-              >
-                10+ Clients Worldwide
-              </p>
-            </div>
-          </motion.div>* */}
-
-          {/* Floating Projects Badge - Repositioned Below Clients */}
+          {/* Floating Projects Badge */}
           <motion.div
             className="absolute right-5 backdrop-blur-sm rounded-xl p-3 z-50 hidden sm:block"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             style={{
               top: "calc(100% + 18px)",
               background: "linear-gradient(90deg, #3B2EEB, #6F4BFF)",
               boxShadow: "0 8px 24px rgba(59, 46, 235, 0.4)",
-            }}
-            animate={{
-              y: [0, 8, 0],
-            }}
-            transition={{
-              duration: 3.6,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.5,
-            }}
-            style={{
               transform: `translate(${mousePosition.x * -0.015}px, ${mousePosition.y * -0.015}px)`,
             }}
           >
             <div className="flex items-center gap-2.5">
               <Rocket className="w-4 h-4 text-white" />
-              <p 
-                className="font-bold whitespace-nowrap text-white" 
-                style={{ 
-                  fontSize: "13px",
-                  fontWeight: 700,
-                }}
-              >
+              <p className="font-bold whitespace-nowrap text-white" style={{ fontSize: "13px" }}>
                 20+ Projects
               </p>
             </div>
           </motion.div>
-
-          {/* Floating Freelance Stats Card - Removed as it's now the main Clients badge */}
         </motion.div>
       </div>
 
       {/* Separator - Same as Header */}
-      <div 
+      <div
         className="absolute bottom-0 left-0 right-0 mx-12"
         style={{
           height: "1px",
@@ -489,3 +430,5 @@ export function Hero({ portraitUrl }: HeroProps) {
     </section>
   );
 }
+
+export default Hero;
