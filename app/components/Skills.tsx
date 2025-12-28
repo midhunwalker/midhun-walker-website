@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useMotionConfig } from "@/lib/useMotionConfig";
 import {
   Code2,
   Palette,
@@ -143,15 +144,18 @@ const getColorClass = (color: string) => {
 };
 
 export function Skills() {
+  const { shouldReduceMotion } = useMotionConfig();
+
   return (
     <section id="skills" className="px-6 lg:px-12 py-24 relative">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <motion.div
           className="text-center space-y-4"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
+          whileInView={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
         >
           <h2 className="text-text-high">Skills & Expertise</h2>
           <p className="text-text-medium max-w-2xl mx-auto">
@@ -170,11 +174,14 @@ export function Skills() {
               <motion.div
                 key={category.id}
                 className="glass-effect rounded-2xl p-6 space-y-6 hover:border-primary/30 transition-all"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
+                whileInView={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: categoryIndex * 0.1 }}
-                whileHover={{ y: -4 }}
+                transition={{ 
+                  delay: shouldReduceMotion ? 0 : categoryIndex * 0.05,
+                  duration: shouldReduceMotion ? 0 : 0.3,
+                }}
+                whileHover={shouldReduceMotion ? {} : { y: -4 }}
               >
                 {/* Category Header */}
                 <div className="flex items-center gap-3">
@@ -192,11 +199,12 @@ export function Skills() {
                     <motion.div
                       key={skill.name}
                       className="space-y-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
+                      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -20 }}
+                      whileInView={shouldReduceMotion ? {} : { opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{
-                        delay: categoryIndex * 0.1 + skillIndex * 0.05,
+                        delay: shouldReduceMotion ? 0 : categoryIndex * 0.05 + skillIndex * 0.02,
+                        duration: shouldReduceMotion ? 0 : 0.3,
                       }}
                     >
                       {/* Skill Name and Years */}
@@ -214,11 +222,11 @@ export function Skills() {
                         <motion.div
                           className={`h-full ${colors.bar} rounded-full`}
                           initial={{ width: 0 }}
-                          whileInView={{ width: `${skill.level}%` }}
+                          whileInView={shouldReduceMotion ? { width: `${skill.level}%` } : { width: `${skill.level}%` }}
                           viewport={{ once: true }}
                           transition={{
-                            duration: 1,
-                            delay: categoryIndex * 0.1 + skillIndex * 0.05,
+                            duration: shouldReduceMotion ? 0 : 0.8,
+                            delay: shouldReduceMotion ? 0 : categoryIndex * 0.05 + skillIndex * 0.02,
                             ease: "easeOut",
                           }}
                         />

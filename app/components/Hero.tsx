@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   ArrowRight,
   Mail,
@@ -14,6 +14,7 @@ import {
 import { Button } from "./ui/button";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useMotionConfig } from "@/lib/useMotionConfig";
 
 interface HeroProps {
   portraitUrl?: string;
@@ -22,6 +23,7 @@ interface HeroProps {
 export function Hero({ portraitUrl = "/midhunPhoto.png" }: HeroProps) {
   const heroRef = useRef<HTMLDivElement | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { shouldReduceMotion, isMobile } = useMotionConfig();
 
   // motion values for parallax/tilt
   const mouseX = useMotionValue(0);
@@ -72,44 +74,48 @@ export function Hero({ portraitUrl = "/midhunPhoto.png" }: HeroProps) {
         }}
       />
 
-      {/* Aurora Glow Effects */}
-      <motion.div
-        className="absolute top-1/4 -left-40 w-[600px] h-[600px] opacity-20"
-        style={{
-          background: "radial-gradient(circle at 50% 50%, #4A58FF, transparent 60%)",
-          filter: "blur(80px)",
-        }}
-        animate={{ x: [0, 50, 0], y: [0, -40, 0], scale: [1, 1.1, 1] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Aurora Glow Effects - Disabled on mobile for performance */}
+      {!isMobile && (
+        <>
+          <motion.div
+            className="absolute top-1/4 -left-40 w-[600px] h-[600px] opacity-20"
+            style={{
+              background: "radial-gradient(circle at 50% 50%, #4A58FF, transparent 60%)",
+              filter: "blur(80px)",
+            }}
+            animate={{ x: [0, 50, 0], y: [0, -40, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          />
 
-      <motion.div
-        className="absolute top-1/3 right-0 w-[500px] h-[500px] opacity-15"
-        style={{
-          background: "radial-gradient(circle at 50% 50%, #7C3BFF, transparent 60%)",
-          filter: "blur(80px)",
-        }}
-        animate={{ x: [0, -40, 0], y: [0, 50, 0], scale: [1, 1.15, 1] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-      />
+          <motion.div
+            className="absolute top-1/3 right-0 w-[500px] h-[500px] opacity-15"
+            style={{
+              background: "radial-gradient(circle at 50% 50%, #7C3BFF, transparent 60%)",
+              filter: "blur(80px)",
+            }}
+            animate={{ x: [0, -40, 0], y: [0, 50, 0], scale: [1, 1.15, 1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          />
 
-      <motion.div
-        className="absolute bottom-1/4 left-1/3 w-[400px] h-[400px] opacity-10"
-        style={{
-          background: "radial-gradient(circle at 50% 50%, #6273FF, transparent 60%)",
-          filter: "blur(70px)",
-        }}
-        animate={{ x: [0, 30, 0], y: [0, -30, 0], scale: [1, 1.2, 1] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
+          <motion.div
+            className="absolute bottom-1/4 left-1/3 w-[400px] h-[400px] opacity-10"
+            style={{
+              background: "radial-gradient(circle at 50% 50%, #6273FF, transparent 60%)",
+              filter: "blur(70px)",
+            }}
+            animate={{ x: [0, 30, 0], y: [0, -30, 0], scale: [1, 1.2, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </>
+      )}
 
       <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center relative z-10">
         {/* Left Column - Text Content */}
         <motion.div
           className="space-y-8 lg:order-1 order-2"
-          initial={{ opacity: 0, y: 30 }}
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.6 }}
         >
           {/* Status Badge */}
           <motion.div
@@ -119,9 +125,9 @@ export function Hero({ portraitUrl = "/midhunPhoto.png" }: HeroProps) {
               border: "1px solid rgba(255, 255, 255, 0.1)",
               boxShadow: "0 0 20px rgba(106, 115, 255, 0.15)",
             }}
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: shouldReduceMotion ? 0 : 0.2, duration: shouldReduceMotion ? 0 : 0.3 }}
           >
             <div className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
             <span className="text-sm" style={{ color: "rgba(255, 255, 255, 0.90)" }}>
@@ -138,9 +144,9 @@ export function Hero({ portraitUrl = "/midhunPhoto.png" }: HeroProps) {
               color: "#F0F4FF",
               lineHeight: 1.1,
             }}
-            initial={{ opacity: 0, y: 20 }}
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: shouldReduceMotion ? 0 : 0.3, duration: shouldReduceMotion ? 0 : 0.3 }}
           >
             Midhun P
           </motion.h1>
